@@ -1,0 +1,8 @@
+<launch>
+
+    <node pkg="ballbot" name="ballsrv" type="ballsrv.py" output="screen" />
+
+    <node pkg="ballbot" name="ballgrasp" type="ballgrasp.py" output="screen" />
+
+
+</launch>
