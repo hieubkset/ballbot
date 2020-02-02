@@ -99,10 +99,12 @@ Kết quả minh họa:
 Code example
 
 ```
-rosrun ballbot calibration
+rosrun ballbot calibration.py
 ```
 
-Độ cao của bàn được thiết lập tại mức 80 cm.
+Thông tin sẽ được lưu vào folder 'ballbot/calib'.
+
+Độ cao của bàn được thiết lập tại mức **80 cm**.
 
 ## Tạo ROS Package 
 
