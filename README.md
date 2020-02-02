@@ -6,6 +6,16 @@ Thiết bị: Sawyer robot, Realsense Camera D435i, table, color balls
 
 Ý tưởng: Dùng xử lý ảnh để phát hiện vị trí của vật trong ảnh. Sau đó chuyển vị trí theo điểm ảnh sang vị trị trong không gian cartesian của robot và dùng ik service cho phần control.
 
+Video demo: [Youtube](https://www.youtube.com/watch?v=42_p_2_yxcc)
+
+# Chạy chương trình
+
+Sử dụng câu lệnh sau:
+
+```
+roslaunch ballbot ballbot.launch
+```
+
 ## Xác định vị trí của các vật thể trong ảnh
 
 Chúng ta sẽ sử dụng **OpenCV** để xác vật thể dựa trên màu sắc. 
@@ -13,7 +23,7 @@ Chúng ta sẽ sử dụng **OpenCV** để xác vật thể dựa trên màu s�
 Code example:
 
 ```
-python color_detector.py
+rosrun ballbot detector.py
 ```
 
 Giải thích code:
@@ -21,7 +31,7 @@ Giải thích code:
 Đọc bức ảnh vào và chuyển nó về kênh màu HSV vì kênh màu này ít bị ảnh hưởng bởi ánh sáng.
 
 ```python
-image = cv2.imread('image/ex1.png')
+image = cv2.imread(img1.png)
 hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 ```
 
@@ -78,21 +88,21 @@ Hàm _waitKey(0)_ sẽ đóng của sổ hiển thị khi một ký tự đượ
 
 Kết quả minh họa:
 
-![image\ex1_result.png](image/ex1_result.png)
+![image\ex1_result.png](image/img1.png)
 
 
 
 ## Calibration
 
+Ý tưởng: chúng ta có 4 tấm marker màu vàng. Bước 1, chúng ta sẽ xác định vị trí của các marker theo đơn vị pixel. Bước 2, di chuyển cánh tay robot tới vị trí các tấm màu từ đó ta xác định tọa độ trong không gian cartesian. Từ đó tính được mỗi pixel ứng với bao nhiêu đơn vị trong không gian cartesian.
 
+Code example
 
+```
+rosrun ballbot calibration
+```
 
-
-
-
-
-
-
+Độ cao của bàn được thiết lập tại mức 80 cm.
 
 ## Tạo ROS Package 
 

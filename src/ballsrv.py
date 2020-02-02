@@ -6,8 +6,10 @@ import cv2
 import numpy as np
 from detector import get_ball_centers, get_marker_centers
 from ballbot.srv import *
+from calibration import get_pixel_markers
 
-SAVED_MARKERS = [[176, 507], [72, 411]]
+
+SAVED_MARKERS = get_pixel_markers()
 MARKER_THRES = 5
 
 

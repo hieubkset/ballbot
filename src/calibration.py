@@ -2,10 +2,19 @@
 import pyrealsense2 as rs
 import numpy as np
 import cv2
+import json
 
 import rospy
 import intera_interface
 import intera_external_devices
+
+import rospkg
+import os
+
+rospack = rospkg.RosPack()
+PACKAGE_LOCATION = rospack.get_path('ballbot')
+CALIB_IMAGE = os.path.join(PACKAGE_LOCATION, 'calib/image.png')
+CALIB_INFO = os.path.join(PACKAGE_LOCATION, 'calib/info.json')
 
 lower = np.array([20, 180, 130])
 upper = np.array([25, 255, 255])
@@ -21,13 +30,12 @@ def pixel():
     config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
     pipeline.start(config)
 
-    cnt = 0
+    for _ in range(300):
+        pipeline.wait_for_frames()
+
     while True:
         frames = pipeline.wait_for_frames()
         color_frame = frames.get_color_frame()
-        if cnt < 300:
-            cnt += 1
-        cnt = 0
         image = np.asanyarray(color_frame.get_data())
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
         mask = cv2.inRange(hsv, lower, upper)
@@ -39,14 +47,14 @@ def pixel():
             cv2.drawContours(image, conts, -1, (255, 255, 0), 1)
             for center in centers:
                 cv2.circle(image, center, 3, [255, 0, 0])
-            cv2.imwrite('calib/c1.png', image)
+            cv2.imwrite(CALIB_IMAGE, image)
 
             centers = np.array(centers)
             x_min = centers[:, 0].min()
             x_max = centers[:, 0].max()
             y_min = centers[:, 1].min()
             y_max = centers[:, 1].max()
-            return x_min, x_max, y_min, y_max
+            return [[x_min, x_max], [y_min, y_max]]
 
 
 def cartesian():
@@ -60,7 +68,9 @@ def cartesian():
         done = False
         while not done:
             c = intera_external_devices.getch()
-            if c == 'q' or c == 'p':
+            if c in ['\x1b', '\x03']:
+                return None
+            elif c == 'p':
                 done = True
         current_pose = limb.endpoint_pose()
         cars.append([current_pose['position'].x, current_pose['position'].y])
@@ -72,16 +82,43 @@ def cartesian():
     Y_min = cars[:, 1].min()
     Y_max = cars[:, 1].max()
 
-    return X_min, X_max, Y_min, Y_max
+    return [[X_min, X_max], [Y_max, Y_min]]
+
+
+def get_pixel_markers():
+    with open(CALIB_INFO, 'r') as f:
+        data = json.load(f)
+    return data['pixel']
+
+
+def get_cartesian_markers():
+    with open(CALIB_INFO, 'r') as f:
+        data = json.load(f)
+    return data['cartesian']
 
 
 def main():
-    x_min, x_max, y_min, y_max = pixel()
-    # X_min, X_max, Y_min, Y_max = cartesian()
-    pxy = [[x_min, x_max], [y_min, y_max]]
-    # cxy = [[X_min, X_max], [Y_max, Y_min]]
-    print('pxy = ', pxy)
-    # print('cxy = ', cxy)
+    print('Get marker pixel position ...')
+    pixel_markers = pixel()
+    print('Marker pixel = ', pixel_markers)
+
+    print('Get marker catersian position ...')
+    cartesian_markers = cartesian()
+    print('Marker cartesian = ', cartesian_markers)
+
+    if cartesian_markers:
+        print("Save calib info? [y/n]")
+        done = False
+        while not done:
+            c = intera_external_devices.getch()
+            if c == 'n':
+                done = True
+            elif c == 'y':
+                calib_info = {'pixel': pixel_markers, 'cartesian': cartesian_markers}
+                with open(CALIB_INFO, 'w') as f:
+                    json.dump(calib_info, f)
+                done = True
+                print('Saved calib info at ' + CALIB_INFO)
 
 
 if __name__ == '__main__':

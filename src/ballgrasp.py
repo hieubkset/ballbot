@@ -8,10 +8,12 @@ from ballbot.srv import Target, TargetResponse, TargetRequest
 from sawyer_ik import ik
 
 from intera_interface import CHECK_VERSION
+from calibration import get_pixel_markers, get_cartesian_markers
 
-PIXEL_MARKERS = [[176, 507], [72, 411]]  ## [[x_min, x_max], [y_min, y_max]]
-CARTESIAN_MARKERS = [[0.4004000599051002, 0.7964501196045618],
-                     [0.22256176082579648, -0.1829347509717589]]  ## [[X_min, X_max], [Y_min, Y_max]]
+# {"cartesian":[[0.4004000599051002, 0.7964501196045618], [0.22256176082579648, -0.1829347509717589]], "pixel": [[176, 507], [72, 411]]}
+# hieght = 80 cm
+PIXEL_MARKERS = get_pixel_markers()  ## [[x_min, x_max], [y_min, y_max]]
+CARTESIAN_MARKERS = get_cartesian_markers()  ## [[X_min, X_max], [Y_min, Y_max]]
 
 UP_DROP_POS = {'right_j6': 2.216546875, 'right_j5': 1.032203125, 'right_j4': 0.4072666015625,
                'right_j3': 1.030751953125, 'right_j2': -0.3963544921875, 'right_j1': -0.4486357421875,
@@ -120,4 +122,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except rospy.ROSInterruptException:
+        pass
