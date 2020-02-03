@@ -264,6 +264,22 @@ chmod +x ballpub.py
 
 Không nên đặt tên file .py trong ```src``` cùng với tên package, khi đó import msg sẽ bị báo lỗi không tìm thấy package.
 
+### Subscriber Pseudocode
+
+```python
+#!/usr/bin/env python
+import rospy
+from ar_track_alvar_msgs.msg import AlvarMarkers
+
+def callback(data):
+        ar_marker = data
+        ...
+    
+rospy.Subscriber("/ar_pose_marker", AlvarMarkers, callback)
+```
+
+
+
 ## Tạo một Service
 
 ### Tạo một srv
@@ -278,7 +294,7 @@ subl Centroid.srv
 Nội dung file ```Centroid.srv```
 
 ```
-bool data
+
 ---
 int32 x
 int32 y
@@ -294,4 +310,45 @@ add_service_files(
 ```
 
 Các bước tiếp theo giống như phần tạo msg.
+
+### Pseudocode Server
+
+```python
+#!/usr/bin/env python
+import rospy
+from ballbot.srv import Target, TargetResponse
+
+class BallService:
+    def __init__(self):
+        ...
+
+    def start_ball_server(self):
+        rospy.init_node('ballsrv', anonymous=True)
+        rospy.Service('ball_position', Target, self.hand_get_ball)
+        rospy.spin()
+
+
+    def hand_get_ball(self, req):
+        ball_centers, conts = get_ball_centers(image)
+        target = TargetResponse(ball_centers[0][0], ball_centers[0][1])
+        return target
+
+if __name__ == '__main__':
+    try:
+        BallService().start_ball_server()
+    except rospy.ROSInterruptException:
+        pass
+```
+
+### Pseudocode Client
+
+```python
+#!/usr/bin/env python
+import rospy
+from ballbot.srv import Target, TargetRequest
+
+target_srv = rospy.ServiceProxy("/ball_position", Target)
+target_srv.wait_for_service()
+target = self.target_srv.call(TargetRequest())
+```
 
