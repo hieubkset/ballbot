@@ -37,7 +37,7 @@ class BallBot:
     def __init__(self):
         self.limb = intera_interface.Limb('right')
         self.limb.move_to_neutral()
-        self.limb.set_joint_position_speed(0.15)
+        self.limb.set_joint_position_speed(0.10)
         self.gripper = intera_interface.Gripper("right_gripper")
         self.gripper.open()
         self.desired_pose = Pose()
