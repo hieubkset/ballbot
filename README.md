@@ -8,7 +8,7 @@ Thiết bị: Sawyer robot, Realsense Camera D435i, table, color balls
 
 Video demo: [Youtube](https://www.youtube.com/watch?v=42_p_2_yxcc)
 
-# Chạy chương trình
+## Chạy chương trình
 
 Sử dụng câu lệnh sau:
 
@@ -151,7 +151,7 @@ Bước 2: Chỉnh sửa các meta-data <version>, <maintainer>, <author>, <lice
 
 ```
 
-# Tạo một Publisher
+## Tạo một Publisher
 
 Mục đích: tạo một publisher xử lý ảnh và trả về vị trí của quả bóng
 
@@ -264,9 +264,9 @@ chmod +x ballpub.py
 
 Không nên đặt tên file .py trong ```src``` cùng với tên package, khi đó import msg sẽ bị báo lỗi không tìm thấy package.
 
-# Tạo một Service
+## Tạo một Service
 
-## Tạo một srv
+### Tạo một srv
 
 ```
 cd ~/ros_ws/src/ballbot
