@@ -4,7 +4,6 @@ import rospy
 import intera_interface
 
 from geometry_msgs.msg import Pose
-from sawyer_ik import ik
 
 from intera_interface import CHECK_VERSION
 
